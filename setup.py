@@ -3,7 +3,6 @@ from flask_restful import reqparse, abort, Api, Resource
 import pickle
 import numpy as np
 import json
-from preProcessTweets import PreProcessTweets
 
 app = Flask(__name__)
 api = Api(app)
