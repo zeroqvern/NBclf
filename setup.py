@@ -3,7 +3,6 @@ from flask_restful import reqparse, abort, Api, Resource
 import pickle
 import numpy as np
 import json
-import pandas as pd
 from .preProcessTweets import PreProcessTweets
 
 app = Flask(__name__)
