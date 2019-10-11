@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 import json
 from preProcessTweets import PreProcessTweets
+import tweetManager
 
 app = Flask(__name__)
 api = Api(app)
@@ -14,11 +15,33 @@ with open('model.pkl', 'rb') as training_model:
 
 
 # routes
-@app.route('/', methods=['POST'])
+@app.route('/predict', methods=['POST'])
+@app.route('/analysis', methods=['GET'])
 def begin():
-    # get data (in list, dict, str format)
-    req = request.get_json(force=True)
+    if request.method == "POST":
+        print("post method called")
 
+        # get data (in list, dict, str format)
+        req = request.get_json(force=True)
+        output = postRequest(req)
+
+        # print output and return to requester
+        print(output)
+        return jsonify(output)
+
+    elif request.method == "GET":
+        keyword = request.args.get('keyword')
+        output = getRequest(keyword)
+
+        return jsonify(output)
+
+    else:
+        output = {'error': 'Invalid method'}
+        print(output)
+        return jsonify(output)
+
+
+def postRequest(req):
     tweetList = []
     data = req
 
@@ -38,10 +61,16 @@ def begin():
 
     # prediction
     output = prediction(tweetList)
+    return output
 
-    # print output and return to requester
-    print(output)
-    return jsonify(output)
+
+def getRequest(keyword):
+    tm = tweetManager
+    tweetList = tm.begin(keyword)
+
+    # prediction
+    output = prediction(tweetList)
+    return output
 
 
 def prediction(tweetList):
