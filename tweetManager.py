@@ -1,4 +1,3 @@
-import twitter
 import tweepy
 from configHeroku import authentication
 from preProcessTweets import PreProcessTweets
