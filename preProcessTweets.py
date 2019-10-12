@@ -1,5 +1,3 @@
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
 import re
 from nltk.tokenize import word_tokenize
 from string import punctuation
@@ -39,19 +37,3 @@ class PreProcessTweets:
         joinedWords = ' '.join(cleanedWords)
 
         return joinedWords
-
-    def featureExtraction(self, cleanedSet):
-        # create bag of words
-
-        # convert words to numbers using bag of words approach
-        # as the data could contain tens thousands of unique words
-        # max_features is set to 1500 to collect most occurring words as features
-        # min_df is set to 5 = include words that occur in at least 5 tweets
-        # max_df is set to 0.7 = include words that occur in a max of 70% of all tweets
-        vectorizer = CountVectorizer(max_df=0.7)
-
-        # converts text into corresponding numeric features
-        X = vectorizer.fit_transform(cleanedSet)
-
-        tfidfconverter = TfidfVectorizer(max_df=0.7)
-        X = tfidfconverter.fit_transform(cleanedSet)
