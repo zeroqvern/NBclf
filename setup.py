@@ -70,12 +70,12 @@ def getRequest(keyword, userid):
     userTweets = begin(keyword)
 
     # prediction and write database
-    output = prediction(userTweets, userid)
+    output = prediction(userTweets, userid, keyword)
 
     return output
 
 
-def prediction(userTweets, userid):
+def prediction(userTweets, userid, keyword):
     tweetList = []
     tweetData = []
     for tweet in userTweets:
@@ -93,7 +93,7 @@ def prediction(userTweets, userid):
     result = model.predict(cleanListSet)
 
     # write to database
-    MongoDB(tweetData, result, userid)
+    MongoDB(tweetData, result, userid, keyword)
 
 
     # count number of negative and positive tweets
