@@ -1,10 +1,11 @@
 from flask import Flask, jsonify, request
 from flask_restful import reqparse, abort, Api, Resource
 import pickle
-import numpy as np
 import json
 from preProcessTweets import PreProcessTweets
-import tweetManager
+from tweetManager import begin
+from MongoDBManager import MongoDB
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 api = Api(app)
@@ -17,7 +18,7 @@ with open('model.pkl', 'rb') as training_model:
 # routes
 @app.route('/predict', methods=['POST'])
 @app.route('/analysis', methods=['GET'])
-def begin():
+def start():
     if request.method == "POST":
         print("post method called")
 
@@ -31,7 +32,8 @@ def begin():
 
     elif request.method == "GET":
         keyword = request.args.get('keyword')
-        output = getRequest(keyword)
+        userid = ObjectId(request.args.get('userid'))
+        output = getRequest(keyword, userid)
 
         return jsonify(output)
 
@@ -64,16 +66,22 @@ def postRequest(req):
     return output
 
 
-def getRequest(keyword):
-    tm = tweetManager
-    tweetList = tm.begin(keyword)
+def getRequest(keyword, userid):
+    userTweets = begin(keyword)
 
-    # prediction
-    output = prediction(tweetList)
+    # prediction and write database
+    output = prediction(userTweets, userid)
+
     return output
 
 
-def prediction(tweetList):
+def prediction(userTweets, userid):
+    tweetList = []
+    tweetData = []
+    for tweet in userTweets:
+        tweetList.append(tweet.text)
+        tweetData.append(tweet)
+
     pos = 0
     neg = 0
 
@@ -83,6 +91,10 @@ def prediction(tweetList):
 
     # predictions
     result = model.predict(cleanListSet)
+
+    # write to database
+    MongoDB(tweetData, result, userid)
+
 
     # count number of negative and positive tweets
     for i in result:
