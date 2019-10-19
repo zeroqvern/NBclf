@@ -1,6 +1,6 @@
-# from boto.s3.connection import S3Connection
 import os
 import tweepy
+from pymongo import MongoClient
 
 # initialize api instance
 CONSUMER_KEY = os.environ.get("CONSUMER_KEY")
